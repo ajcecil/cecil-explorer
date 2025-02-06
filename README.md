@@ -11,3 +11,24 @@ file explorer built to display ".md" files in the window on windows 11 OS
 	- set drives to be tabs at the top
 	- can change favorites by drive
 	- each tab will have its own txt file of favorites
+
+
+
+
+# Formatting
+All formatting should be set in a text or json file.
+
+## Default Colors
+- Default to dark mode color scheme
+- use greens and greys/black
+
+## Default Font
+- Courier New
+- Size 12
+
+## Folder icons
+- use png files to make it easier to assign images
+	- using ico files typically requires conversion
+- Set one png as fold icon
+- customize favorite folders in favorites settings
+- add multiple options to the icons folder

@@ -4,6 +4,7 @@ import shutil
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
+import subprocess
 
 # Load color theme from JSON file
 def load_theme():
@@ -65,14 +66,16 @@ class FileExplorer:
         self.tree = ttk.Treeview(self.sidebar_frame)
         self.tree.heading("#0", text="Folders", anchor="w")
         self.tree.pack(fill="both", expand=True)
-        self.tree.bind("<Double-1>", self.on_double_click)
+        self.tree.bind("<ButtonRelease-1>", self.on_single_click)  # Single click for folders
+        self.tree.bind("<Double-1>", self.on_double_click)  # Double click for files
 
         # Main Content (Right)
         self.main_frame = tk.Frame(self.paned_window, bg=self.theme["main_frame_background"])
         self.paned_window.add(self.main_frame)
 
-        self.file_listbox = tk.Listbox(self.main_frame, bg=self.theme["main_frame_background"], fg=self.theme["foreground"])
-        self.file_listbox.pack(fill="both", expand=True, padx=5, pady=5)
+        self.file_tree = ttk.Treeview(self.main_frame, columns=("name",), show="tree")
+        self.file_tree.pack(fill="both", expand=True, padx=5, pady=5)
+        self.file_tree.bind("<Double-1>", self.on_double_click)
 
     def apply_theme(self):
         """Applies the color theme to the app."""
@@ -98,48 +101,57 @@ class FileExplorer:
                     self.tree.insert(node, "end", text="Loading...")  # Placeholder for lazy loading
         except PermissionError:
             pass
-
     def display_folder_contents(self, path):
-        """Displays the contents of the selected folder in the right pane."""
-        self.file_listbox.delete(0, tk.END)
+        """Displays the contents of the selected folder in the right pane with icons."""
+        self.file_tree.delete(*self.file_tree.get_children())  # Clear existing items
         try:
             for item in os.listdir(path):
                 full_path = os.path.join(path, item)
                 if os.path.isfile(full_path):
-                    self.file_listbox.insert(tk.END, item)
+                    # Choose the right icon
+                    if item.endswith(".zip"):
+                        icon = self.zip_icon
+                    else:
+                        icon = self.file_icon
+                    # Insert the file into the tree with an icon
+                    self.file_tree.insert("", "end", text=item, image=icon, values=[full_path])
         except PermissionError:
             pass
 
-    def on_double_click(self, event):
-        """Handles double-click on either a file (to open it) or a folder (to load its contents)."""
-        # Check if the double-click is on a file list or the tree (folder)
-        selected_index = self.file_listbox.curselection()
-        if selected_index:  # If it's a file in the file list
-            file_name = self.file_listbox.get(selected_index)
-            folder = self.get_current_folder()
-            if folder:
-                file_path = os.path.join(folder, file_name)
-                if os.path.isfile(file_path):
-                    try:
-                        # Open the file with the default application
-                        if os.name == 'nt':  # Windows
-                            os.startfile(file_path)
-                        elif os.name == 'posix':  # Linux or macOS
-                            subprocess.call(['open', file_path])  # For macOS
-                            # subprocess.call(['xdg-open', file_path])  # For Linux
-                        messagebox.showinfo("File Opened", f"{file_name} opened successfully!")
-                    except Exception as e:
-                        messagebox.showerror("Error", f"Could not open file: {e}")
+    def on_single_click(self, event):
+        """Handles single-click on a folder to expand/collapse it."""
+        selected_item = self.tree.focus()
+        path = self.tree.item(selected_item, "values")
 
-        else:  # If it's a folder in the tree
-            selected_item = self.tree.focus()
-            path = self.tree.item(selected_item, "values")
-            if path:
-                path = path[0]
-                if os.path.isdir(path):
-                    self.tree.delete(*self.tree.get_children(selected_item))  # Clear placeholder
+        if path:
+            path = path[0]
+            if os.path.isdir(path):
+                # Check if it's already expanded
+                if self.tree.get_children(selected_item):  # Folder is expanded, collapse it
+                    self.tree.delete(*self.tree.get_children(selected_item))
+                else:  # Expand it
                     self.populate_tree(path, selected_item)
                     self.display_folder_contents(path)
+
+
+    def on_double_click(self, event):
+        """Handles double-click on either a file (to open it) or a folder (to load its contents)."""
+        selected_item = self.file_tree.focus()
+        file_path = self.file_tree.item(selected_item, "values")
+        
+        if file_path:  # If it's a file in the file tree
+            file_path = file_path[0]
+            if os.path.isfile(file_path):
+                try:
+                    if os.name == 'nt':  # Windows
+                        os.startfile(file_path)
+                    elif os.name == 'posix':  # macOS/Linux
+                        subprocess.call(['open', file_path])  # macOS
+                        # subprocess.call(['xdg-open', file_path])  # Linux
+                    messagebox.showinfo("File Opened", f"{os.path.basename(file_path)} opened successfully!")
+                except Exception as e:
+                    messagebox.showerror("Error", f"Could not open file: {e}")
+
 
     def rename_item(self):
         """Renames a selected file."""

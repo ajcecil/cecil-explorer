@@ -1,0 +1,14 @@
+{
+    "background": "#1a1a1a",
+    "foreground": "#ffffff",
+    "sidebar_background": "#333333",
+    "sidebar_foreground": "#d3d3d3",
+    "folder_icon": "#8a9a5b",
+    "file_icon": "#a0a0a0",
+    "selected_item": "#555555",
+    "toolbar_background": "#222222",
+    "toolbar_button_background": "#444444",
+    "toolbar_button_hover": "#666666",
+    "main_frame_background": "#1a1a1a",
+    "highlight": "#2d572d"
+}

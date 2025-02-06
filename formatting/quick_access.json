@@ -1,0 +1,15 @@
+{
+    "Home":{
+        "path": "C:/Users/ajcecil",
+        "icon": "icons/home.png"
+    },
+    "Documents":{
+        "path": "C:/Users/ajcecil/Documents",
+        "icon":"icons/document.png"
+    },
+    "Downloads":{
+        "path":"C:/Users/ajcecil/Downloads",
+        "icon":"icons/download.png"
+    }
+}
+

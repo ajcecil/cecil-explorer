@@ -186,36 +186,37 @@ class FileExplorer:
                     messagebox.showerror("Error", f"Could not open file: {e}")
 
     def display_markdown(self, file_path):
-        """Converts the markdown file to HTML and displays it in the HtmlFrame."""
+        """Converts markdown file to HTML and displays it with configurable styling."""
         with open(file_path, 'r') as f:
             md_content = f.read()
         html_content = markdown.markdown(md_content)
-        
-        # Style the HTML content (like before)
-        css = """
+
+        # Generate CSS dynamically from JSON
+        css = f"""
         <style>
-            body {
-                font-family: 'Courier New', Courier, monospace;
-                background-color: #2e2e2e;
-                color: #32cd32;
+            body {{
+                font-family: {self.theme['md_font_family']};
+                background-color: {self.theme['md_background_color']};
+                color: {self.theme['md_text_color']};
                 margin: 20px;
                 padding: 20px;
-            }
-            h1, h2, h3 {
-                color: #32cd32;
-            }
-            p {
-                font-size: 14px;
-            }
-            a {
-                color: #32cd32;
+            }}
+            h1, h2, h3 {{
+                color: {self.theme['md_heading_color']};
+            }}
+            p {{
+                font-size: {self.theme['md_font_size']};
+            }}
+            a {{
+                color: {self.theme['md_link_color']};
                 text-decoration: none;
-            }
-            a:hover {
+            }}
+            a:hover {{
                 text-decoration: underline;
-            }
+            }}
         </style>
         """
+        
         styled_html_content = css + html_content
         self.md_html_frame.load_html(styled_html_content)
 

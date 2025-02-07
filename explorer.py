@@ -5,6 +5,8 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
 import subprocess
+import markdown
+from tkinterweb import HtmlFrame
 
 # Load color theme from JSON file
 def load_theme():
@@ -26,7 +28,7 @@ class FileExplorer:
         self.root = root
         self.theme = load_theme()  # Load theme from JSON file
         self.root.title("Custom File Explorer")
-        self.root.geometry("900x600")
+        self.root.geometry("900x800")  # Increase window size for additional content
 
         # Load icons
         self.folder_icon = ImageTk.PhotoImage(Image.open("icons/folder.png").resize((16, 16)))
@@ -77,6 +79,12 @@ class FileExplorer:
         self.file_tree.pack(fill="both", expand=True, padx=5, pady=5)
         self.file_tree.bind("<Double-1>", self.on_double_click)
 
+        # Markdown display area (below file tree)
+        self.md_frame = tk.Frame(root, bg=self.theme["background"])
+        self.md_frame.pack(fill="both", expand=True)
+        self.md_html_frame = HtmlFrame(self.md_frame, width=800, height=400)
+        self.md_html_frame.pack(fill="both", expand=True)
+
     def apply_theme(self):
         """Applies the color theme to the app."""
         self.root.configure(bg=self.theme["background"])
@@ -101,6 +109,7 @@ class FileExplorer:
                     self.tree.insert(node, "end", text="Loading...")  # Placeholder for lazy loading
         except PermissionError:
             pass
+
     def display_folder_contents(self, path):
         """Displays the contents of the selected folder in the right pane with icons."""
         self.file_tree.delete(*self.file_tree.get_children())  # Clear existing items
@@ -133,7 +142,6 @@ class FileExplorer:
                     self.populate_tree(path, selected_item)
                     self.display_folder_contents(path)
 
-
     def on_double_click(self, event):
         """Handles double-click on either a file (to open it) or a folder (to load its contents)."""
         selected_item = self.file_tree.focus()
@@ -143,14 +151,51 @@ class FileExplorer:
             file_path = file_path[0]
             if os.path.isfile(file_path):
                 try:
-                    if os.name == 'nt':  # Windows
-                        os.startfile(file_path)
-                    elif os.name == 'posix':  # macOS/Linux
-                        subprocess.call(['open', file_path])  # macOS
-                        # subprocess.call(['xdg-open', file_path])  # Linux
-                    messagebox.showinfo("File Opened", f"{os.path.basename(file_path)} opened successfully!")
+                    if file_path.endswith(".md"):
+                        # Load and display the markdown file
+                        self.display_markdown(file_path)
+                    else:
+                        # Open regular files
+                        if os.name == 'nt':  # Windows
+                            os.startfile(file_path)
+                        elif os.name == 'posix':  # macOS/Linux
+                            subprocess.call(['open', file_path])  # macOS
                 except Exception as e:
                     messagebox.showerror("Error", f"Could not open file: {e}")
+
+    def display_markdown(self, file_path):
+        """Converts the markdown file to HTML and displays it in the HtmlFrame."""
+        with open(file_path, 'r') as f:
+            md_content = f.read()
+        html_content = markdown.markdown(md_content)
+        
+        # Style the HTML content (like before)
+        css = """
+        <style>
+            body {
+                font-family: 'Courier New', Courier, monospace;
+                background-color: #2e2e2e;
+                color: #32cd32;
+                margin: 20px;
+                padding: 20px;
+            }
+            h1, h2, h3 {
+                color: #32cd32;
+            }
+            p {
+                font-size: 14px;
+            }
+            a {
+                color: #32cd32;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+        </style>
+        """
+        styled_html_content = css + html_content
+        self.md_html_frame.load_html(styled_html_content)
 
 
     def rename_item(self):

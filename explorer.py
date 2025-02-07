@@ -37,6 +37,16 @@ class FileExplorer:
 
         # Apply theme colors to window
         self.apply_theme()
+        
+        # Configure Treeview Styles for Font and Background
+        self.style = ttk.Style()
+        self.style.configure("Treeview", 
+                            background=self.theme["tree_background"], 
+                            foreground=self.theme["tree_foreground"], 
+                            fieldbackground=self.theme["tree_background"])
+        self.style.configure("Treeview.Heading", 
+                            background=self.theme["tree_heading_background"], 
+                            foreground=self.theme["tree_heading_foreground"])
 
         # Create a toolbar frame
         self.toolbar = tk.Frame(root, bg=self.theme["toolbar_background"], height=30)
@@ -113,17 +123,29 @@ class FileExplorer:
     def display_folder_contents(self, path):
         """Displays the contents of the selected folder in the right pane with icons."""
         self.file_tree.delete(*self.file_tree.get_children())  # Clear existing items
+        md_files = []  # List to store .md files
+        readme_found = None  # Track if README.md exists
+
         try:
             for item in os.listdir(path):
                 full_path = os.path.join(path, item)
                 if os.path.isfile(full_path):
+                    # Identify markdown files
+                    if item.lower() == "readme.md":
+                        readme_found = full_path
+                    elif item.endswith(".md"):
+                        md_files.append(full_path)
+
                     # Choose the right icon
-                    if item.endswith(".zip"):
-                        icon = self.zip_icon
-                    else:
-                        icon = self.file_icon
-                    # Insert the file into the tree with an icon
+                    icon = self.zip_icon if item.endswith(".zip") else self.file_icon
                     self.file_tree.insert("", "end", text=item, image=icon, values=[full_path])
+
+            # Load priority markdown file
+            if readme_found:
+                self.display_markdown(readme_found)
+            elif md_files:
+                self.display_markdown(md_files[0])
+
         except PermissionError:
             pass
 

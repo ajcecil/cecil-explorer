@@ -32,6 +32,7 @@ class FileExplorer:
         self.folder_icon = ImageTk.PhotoImage(Image.open("icons/folder.png").resize((16, 16)))
         self.file_icon = ImageTk.PhotoImage(Image.open("icons/document.png").resize((16, 16)))
         self.zip_icon = ImageTk.PhotoImage(Image.open("icons/soil_cube.png").resize((16, 16)))
+        
 
         # Apply theme colors to window
         self.apply_theme()

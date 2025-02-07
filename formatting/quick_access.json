@@ -1,15 +1,10 @@
 {
-    "Home":{
-        "path": "C:/Users/ajcecil",
-        "icon": "icons/home.png"
-    },
-    "Documents":{
-        "path": "C:/Users/ajcecil/Documents",
-        "icon":"icons/document.png"
-    },
-    "Downloads":{
-        "path":"C:/Users/ajcecil/Downloads",
-        "icon":"icons/download.png"
-    }
+    "Home": "C:/",
+    "Documents": "C:/Users/ajcecil/Documents",
+    "Downloads": "C:/Users/ajcecil/Downloads",
+    "Courses": "C:/Users/ajcecil/Course_Work",
+    "Projects": "C:/Users/ajcecil/Project_Work",
+    "GLSI": "C:/Users/ajcecil/General_GLSI_Projects",
+    "Library (S:)": "S:/",
+    "Projects (T:)": "T:/"
 }
-

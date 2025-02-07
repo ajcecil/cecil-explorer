@@ -14,19 +14,17 @@ def load_theme():
         theme = json.load(theme_file)
     return theme
 
-# Predefined quick-access folders
-QUICK_ACCESS_FOLDERS = {
-    "Home": os.path.expanduser("~"),
-    "Documents": os.path.join(os.path.expanduser("~"), "Documents"),
-    "Downloads": os.path.join(os.path.expanduser("~"), "Downloads"),
-    "Desktop": os.path.join(os.path.expanduser("~"), "Desktop"),
-    "Projects": "C:/Users/ajcecil/Project_Work"
-}
+def load_quick_access():
+    with open("formatting/quick_access.json", "r") as quick_access:
+        QUICK_ACCESS_FOLDERS = json.load(quick_access)
+    return QUICK_ACCESS_FOLDERS
+
 
 class FileExplorer:
     def __init__(self, root):
         self.root = root
         self.theme = load_theme()  # Load theme from JSON file
+        self.QUICK_ACCESS_FOLDERS = load_quick_access() # Load the Quick Access Folders
         self.root.title("Custom File Explorer")
         self.root.geometry("900x800")  # Increase window size for additional content
 
@@ -71,7 +69,7 @@ class FileExplorer:
         self.folder_listbox.bind("<<ListboxSelect>>", self.load_selected_folder)
 
         # Populate Quick Access sidebar
-        for folder in QUICK_ACCESS_FOLDERS.keys():
+        for folder in self.QUICK_ACCESS_FOLDERS.keys():
             self.folder_listbox.insert(tk.END, folder)
 
         # Folder Tree (Under Quick Access)
@@ -104,7 +102,7 @@ class FileExplorer:
         selected_index = self.folder_listbox.curselection()
         if selected_index:
             folder_name = self.folder_listbox.get(selected_index)
-            folder_path = QUICK_ACCESS_FOLDERS[folder_name]
+            folder_path = self.QUICK_ACCESS_FOLDERS[folder_name]
             self.tree.delete(*self.tree.get_children())  # Clear tree
             self.populate_tree(folder_path, "")
             self.display_folder_contents(folder_path)
@@ -272,7 +270,7 @@ class FileExplorer:
         selected_index = self.folder_listbox.curselection()
         if selected_index:
             folder_name = self.folder_listbox.get(selected_index)
-            return QUICK_ACCESS_FOLDERS.get(folder_name, None)
+            return self.QUICK_ACCESS_FOLDERS.get(folder_name, None)
         return None
 
 if __name__ == "__main__":

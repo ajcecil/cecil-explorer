@@ -15,7 +15,7 @@ def load_theme():
     return theme
 
 def load_quick_access():
-    with open("formatting/quick_access.json", "r") as quick_access:
+    with(open("formatting/quick_access.json", "r")) as quick_access:
         QUICK_ACCESS_FOLDERS = json.load(quick_access)
     return QUICK_ACCESS_FOLDERS
 
@@ -24,7 +24,7 @@ class FileExplorer:
     def __init__(self, root):
         self.root = root
         self.theme = load_theme()  # Load theme from JSON file
-        self.QUICK_ACCESS_FOLDERS = load_quick_access() # Load the Quick Access Folders
+        self.QUICK_ACCESS_FOLDERS = load_quick_access()
         self.root.title("Custom File Explorer")
         self.root.geometry("900x800")  # Increase window size for additional content
 

@@ -48,7 +48,7 @@ class FileExplorer:
         ttk.Button(self.toolbar, text="Unzip", command=self.unzip_item).pack(side="left", padx=5, pady=2)
 
         # Create a PanedWindow to separate Sidebar and Main content
-        self.paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL)
+        self.paned_window = tk.PanedWindow(root, orient=tk.HORIZONTAL, bg=self.theme["background"])
         self.paned_window.pack(fill="both", expand=True)
 
         # Sidebar Frame (Left)

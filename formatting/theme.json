@@ -1,5 +1,5 @@
 {
-    "background": "#1a1a1a",
+    "background": "#333333",
     "foreground": "#ffffff",
     "sidebar_background": "#333333",
     "sidebar_foreground": "#d3d3d3",
@@ -9,6 +9,6 @@
     "toolbar_background": "#222222",
     "toolbar_button_background": "#444444",
     "toolbar_button_hover": "#666666",
-    "main_frame_background": "#1a1a1a",
+    "main_frame_background": "#333333",
     "highlight": "#2d572d"
 }
